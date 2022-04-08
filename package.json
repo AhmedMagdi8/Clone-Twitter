@@ -4,16 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AhmedMagdi12/Clone-Twitter.git"
   },
-  "author": "",
+  "author": "Ahmed Magdi",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/AhmedMagdi12/Clone-Twitter/issues"
   },
-  "homepage": "https://github.com/AhmedMagdi12/Clone-Twitter#readme"
+  "homepage": "https://github.com/AhmedMagdi12/Clone-Twitter#readme",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "mongodb": "^4.5.0",
+    "mongoose": "^6.2.10",
+    "pug": "^3.0.2"
+  }
 }
