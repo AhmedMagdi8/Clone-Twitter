@@ -10,8 +10,23 @@ html(lang="en")
         .wrapper 
             .row 
                 nav.col-2 
-                    span Navbar
-                .mainSectionContainer.col-10.col-md-10 
+                    a.blue(href="/")
+                        .fa-brands.fa-twitter
+                    a(href="/")
+                        .fa-solid.fa-house
+                    a(href="/search")
+                        .fa-solid.fa-magnifying-glass
+                    a(href="/notifications")
+                        .fa-solid.fa-bell               
+                    a(href="/messages")
+                        .fa-solid.fa-envelope                   
+                    a(href="/profile")
+                        .fa-solid.fa-user
+                    a(href="/logout")
+                        .fa-solid.fa-right-from-bracket
+                .mainSectionContainer.col-10.col-md-8.col-lg-6
+                    .titleContainer 
+                        h1 #{pageTitle}
                     block content
                 div.d-none.d-md-block.col-2.col-lg-4
                     span third column

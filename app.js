@@ -8,6 +8,8 @@ const connectDB = require('./database');
 const middleware = require('./middleware');
 const loginRoutes = require('./routes/loginRoutes');
 const registerRoutes = require('./routes/registerRoutes');
+const logoutRoutes = require('./routes/logoutRoutes');
+
 
 const app = express();
 const port = process.env.PORT;
@@ -26,6 +28,7 @@ app.use(session({
 // Routes
 app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
+app.use("/logout", logoutRoutes);
 
 
 app.get('/', middleware.authMiddleware ,(req, res, next) => {

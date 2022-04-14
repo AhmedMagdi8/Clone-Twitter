@@ -5,6 +5,10 @@ exports.getLogin = (req, res, next) => {
   res.status(200).render("login");
 };
 
+exports.getLogout = (req, res, next) => {
+    res.redirect("/login");
+};
+   
 exports.postLogin = async (req, res, next) => {
 
     const username = req.body.username;
