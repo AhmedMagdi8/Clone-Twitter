@@ -10,6 +10,9 @@ const loginRoutes = require('./routes/loginRoutes');
 const registerRoutes = require('./routes/registerRoutes');
 const logoutRoutes = require('./routes/logoutRoutes');
 
+// Api Routes
+const postsApiRoutes = require('./routes/api/posts');
+
 
 const app = express();
 const port = process.env.PORT;
@@ -29,6 +32,7 @@ app.use(session({
 app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/logout", logoutRoutes);
+app.use("/api/posts", postsApiRoutes);
 
 
 app.get('/', middleware.authMiddleware ,(req, res, next) => {
