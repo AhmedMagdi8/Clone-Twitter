@@ -10,7 +10,7 @@ const loginRoutes = require('./routes/loginRoutes');
 const registerRoutes = require('./routes/registerRoutes');
 const logoutRoutes = require('./routes/logoutRoutes');
 
-// Api Routes
+// Api Routes for posts
 const postsApiRoutes = require('./routes/api/posts');
 
 

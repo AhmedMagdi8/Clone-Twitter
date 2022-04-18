@@ -23,6 +23,10 @@ $("#submitPostButton").click((event) => {
   });
 });
 
+$(document).on("click",".likedButton" ,() => {
+    alert('clickd')
+  });
+
 function createPostHtml(postData) {
   const postedBy = postData.postedBy;
 
@@ -67,7 +71,7 @@ function createPostHtml(postData) {
                             </div>
 
                             <div class="postButtonContainer">
-                                <button>
+                                <button class="likedButton">
                                     <i class="fa-regular fa-heart"></i>
                                 </button>
                             </div>
