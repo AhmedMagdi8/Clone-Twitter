@@ -3,9 +3,12 @@ const Post = require("../../models/postModel");
 
 exports.getPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find()
+    let posts = await Post.find()
       .populate("postedBy")
+      .populate("retweetData")
       .sort({ createdAt: -1 });
+    
+    posts = await User.populate(posts, { path : "retweetData.postedBy"});
     res.status(200).send(posts);
   } catch (err) {
     res.sendStatus(400);
@@ -41,6 +44,44 @@ exports.likePost = async (req, res, next) => {
     res.sendStatus(400);
   }
 };
+
+exports.retweetPost = async (req, res, next) => {
+    try {
+
+      const postId = req.params.id;
+      const userId = req.session.user._id;
+        
+
+      const deletedPost = await Post.findOneAndDelete({ postedBy: userId, retweetData: postId});
+
+      const option = deletedPost ? "$pull" : "$addToSet";
+  
+      let repost = deletedPost;
+
+      if(repost == null) {
+          repost = await Post.create({postedBy : userId, retweetData : postId})
+      }
+      
+      // return the newly updated user with the new likes array instead of the cashed one in session user
+      req.session.user = await User.findByIdAndUpdate(
+        userId,
+        { [option]: { retweets : repost._id } },
+        { new: true }
+      );
+      // Update post
+      const post = await Post.findByIdAndUpdate(
+          postId,
+          { [option]: { retweetUsers: userId } },
+          { new: true }
+        );
+  
+      res.status(200).send(post);
+  
+    } catch (err) {
+        console.log(err);
+      res.sendStatus(400);
+    }
+  };
 
 exports.createPost = async (req, res, next) => {
   if (!req.body.content) {

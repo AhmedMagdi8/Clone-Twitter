@@ -184,3 +184,23 @@ h1 {
 .liked {
     color: red;
 }
+
+.retweeted {
+    color: green;
+}
+
+.postButtonContainer.red button:hover {
+    color: red;
+    background-color: lightcoral;
+}
+.postButtonContainer.green button:hover {
+    color: green;
+    background-color:lightgreen;
+}
+
+.postActionContainer {
+    padding-left: 35px;
+    font-size: 13px;
+    color: --var(--greyText);
+    margin-bottom: 5px;
+}

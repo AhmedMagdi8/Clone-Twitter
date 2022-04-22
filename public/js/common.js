@@ -43,6 +43,28 @@ $(document).on("click", ".likedButton", (event) => {
 
 });
 
+$(document).on("click", ".retweetButton", (event) => {
+    let button = $(event.target);
+    let postId = getPostId(button);
+    if(!postId) return;
+
+    $.ajax({
+        url: `/api/posts/${postId}/retweet`,
+        type: 'POST',
+        success: (postData) => {
+            button.find('span').text(postData.retweetUsers.length || '');
+            if(postData.retweetUsers.includes(userLoggedIn._id)) {
+                button.addClass('retweeted');
+                // let post = createPostHtml(postData);
+                // $(".postsContainer").prepend(post);
+            } else {
+                button.removeClass('retweeted');
+            }
+        }
+    });
+
+});
+
 function getPostId(element) {
     const isRoot = element.hasClass("post");
     const root = isRoot ? element : element.closest(".post");
@@ -52,6 +74,15 @@ function getPostId(element) {
     return postId;
 }
 function createPostHtml(postData) {
+
+  if(!postData) return alert("post object is null");
+
+  let isRetweet = postData.retweetData ? true : false;
+
+  let retweetedBy = isRetweet ? postData.postedBy.username : null;
+  postData = isRetweet ? postData.retweetData : postData;
+
+  console.log(isRetweet);
   const postedBy = postData.postedBy;
 
   if (postedBy._id === undefined) {
@@ -60,7 +91,15 @@ function createPostHtml(postData) {
   const timestamp = timeDifference(new Date(), new Date(postData.createdAt));
 
   const likedButtonClass = postData.likes.includes(userLoggedIn._id) ? "liked":'';
+  const retweetButtonClass = postData.retweetUsers.includes(userLoggedIn._id) ? "retweeted":'';
+  let retweetText = '';
+  if(isRetweet) 
+    retweetText = `<span>Retweeted by <a href='/profile/${retweetedBy}'>${retweetedBy}</a></span>`;
+
   return `<div class="post" data-id='${postData._id}'>
+                <div class='postActionContainer'>
+                    ${retweetText}
+                </div>
                 <div class="mainContentContainer">
                     <div class="userImageContainer">
                         <img src='${postedBy.profilePic}'/>
@@ -90,12 +129,14 @@ function createPostHtml(postData) {
                             </div>
 
                             <div class="postButtonContainer green">
-                                <button class="retweet">
-                                    <i class="fa-solid fa-retweet"></i>                                
+                                <button class="retweetButton ${retweetButtonClass}">
+                                    <i class="fa-solid fa-retweet"></i>   
+                                    <span >${postData.retweetUsers.length || ''}</span>
+                             
                                 </button>
                             </div>
 
-                            <div class="postButtonContainer">
+                            <div class="postButtonContainer red">
                                 <button class="likedButton ${likedButtonClass}">
                                     <i class="fa-regular fa-heart"></i>
                                     <span >${postData.likes.length || ''}</span>

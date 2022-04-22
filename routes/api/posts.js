@@ -9,4 +9,6 @@ router.post('/' ,postsController.createPost);
  
 router.put('/:id/like' ,postsController.likePost);
  
+router.post('/:id/retweet' ,postsController.retweetPost);
+
 module.exports = router;
