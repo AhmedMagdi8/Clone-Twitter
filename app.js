@@ -39,7 +39,8 @@ app.get('/', middleware.authMiddleware ,(req, res, next) => {
     
     const payload = {
         pageTitle:'Home',
-        userLoggedIn: req.session.user
+        userLoggedIn: req.session.user,
+        userLoggedInClient: JSON.stringify(req.session.user)
     }
     res.status(200).render("home", payload);    
 })

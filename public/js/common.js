@@ -23,10 +23,34 @@ $("#submitPostButton").click((event) => {
   });
 });
 
-$(document).on("click",".likedButton" ,() => {
-    alert('clickd')
-  });
+$(document).on("click", ".likedButton", (event) => {
+    let button = $(event.target);
+    let postId = getPostId(button);
+    if(!postId) return;
 
+    $.ajax({
+        url: `/api/posts/${postId}/like`,
+        type: 'PUT',
+        success: (postData) => {
+            button.find('span').text(postData.likes.length || '');
+            if(postData.likes.includes(userLoggedIn._id)) {
+                button.addClass('liked');
+            } else {
+                button.removeClass('liked');
+            }
+        }
+    });
+
+});
+
+function getPostId(element) {
+    const isRoot = element.hasClass("post");
+    const root = isRoot ? element : element.closest(".post");
+    const postId = root.data().id;
+    if(!postId)
+        return;
+    return postId;
+}
 function createPostHtml(postData) {
   const postedBy = postData.postedBy;
 
@@ -35,7 +59,8 @@ function createPostHtml(postData) {
   const diplayName = postedBy.firstName + " " + postedBy.lastName;
   const timestamp = timeDifference(new Date(), new Date(postData.createdAt));
 
-  return `<div class="post">
+  const likedButtonClass = postData.likes.includes(userLoggedIn._id) ? "liked":'';
+  return `<div class="post" data-id='${postData._id}'>
                 <div class="mainContentContainer">
                     <div class="userImageContainer">
                         <img src='${postedBy.profilePic}'/>
@@ -64,15 +89,16 @@ function createPostHtml(postData) {
                                 </button>
                             </div>
 
-                            <div class="postButtonContainer">
-                                <button>
+                            <div class="postButtonContainer green">
+                                <button class="retweet">
                                     <i class="fa-solid fa-retweet"></i>                                
                                 </button>
                             </div>
 
                             <div class="postButtonContainer">
-                                <button class="likedButton">
+                                <button class="likedButton ${likedButtonClass}">
                                     <i class="fa-regular fa-heart"></i>
+                                    <span >${postData.likes.length || ''}</span>
                                 </button>
                             </div>
 
