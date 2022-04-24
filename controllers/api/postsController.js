@@ -6,9 +6,12 @@ exports.getPosts = async (req, res, next) => {
     let posts = await Post.find()
       .populate("postedBy")
       .populate("retweetData")
+      .populate("replyTo")
       .sort({ createdAt: -1 });
     
     posts = await User.populate(posts, { path : "retweetData.postedBy"});
+    posts = await User.populate(posts, { path : "replyTo.postedBy"});
+
     res.status(200).send(posts);
   } catch (err) {
     res.sendStatus(400);
@@ -21,7 +24,7 @@ exports.getPost = async (req, res, next) => {
       const post = await Post.findById(postId)
       .populate("postedBy")
       .populate("retweetData");
-      
+
       res.status(200).send(post);
     } catch (err) {
       res.sendStatus(400);
@@ -97,6 +100,7 @@ exports.retweetPost = async (req, res, next) => {
   };
 
 exports.createPost = async (req, res, next) => {
+
   if (!req.body.content) {
     console.log("Content params wasn't sent with request");
     res.sendStatus(400);
@@ -107,13 +111,17 @@ exports.createPost = async (req, res, next) => {
     postedBy: req.session.user._id,
   };
 
+  if(req.body.replyTo) {
+      postData.replyTo = req.body.replyTo;
+  }
+
   try {
     let newPost = await Post.create(postData);
+    console.log(newPost);
     newPost = await User.populate(newPost, { path: "postedBy" });
     res.status(201).send(newPost);
   } catch (err) {
     console.log(err);
     res.sendStatus(400);
   }
-  console.log(postData);
 };
