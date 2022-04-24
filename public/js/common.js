@@ -1,10 +1,14 @@
-$("#postTextarea").keyup((event) => {
+$("#postTextarea, #replyTextarea").keyup((event) => {
   const value = event.target.value.trim();
+
+  let isModel = $(event.target).parents(".modal").length == 1;
+
+  let submitButton = isModel ? $("#submitReplyButton") : $("#submitPostButton");
   if (value) {
-    $("#submitPostButton").prop("disabled", false);
+    submitButton.prop("disabled", false);
     return;
   }
-  $("#submitPostButton").prop("disabled", true);
+  submitButton.prop("disabled", true);
 });
 
 $("#submitPostButton").click((event) => {
@@ -23,6 +27,21 @@ $("#submitPostButton").click((event) => {
   });
 });
 
+$("#replyModal").on("show.bs.modal", (event) => {
+    let button = $(event.relatedTarget);
+    let postId = getPostId(button);
+
+    $.get("/api/posts/"+ postId, post => {
+        let container = $("#originalPostContainer")
+        container.html("");
+
+        let html = createPostHtml(post);
+        container.append(html);
+
+});
+
+
+})
 $(document).on("click", ".likedButton", (event) => {
     let button = $(event.target);
     let postId = getPostId(button);
@@ -82,7 +101,6 @@ function createPostHtml(postData) {
   let retweetedBy = isRetweet ? postData.postedBy.username : null;
   postData = isRetweet ? postData.retweetData : postData;
 
-  console.log(isRetweet);
   const postedBy = postData.postedBy;
 
   if (postedBy._id === undefined) {
@@ -123,7 +141,7 @@ function createPostHtml(postData) {
                         <div class='postFooter'>
 
                             <div class="postButtonContainer">
-                                <button>
+                                <button data-bs-toggle="modal" data-bs-target="#replyModal">
                                     <i class="fa-regular fa-comment"></i>                                
                                 </button>
                             </div>
@@ -172,4 +190,17 @@ function timeDifference(current, previous) {
   } else {
     return Math.round(elapsed / msPerYear) + " years ago";
   }
+}
+
+function outputPosts(results, container) {
+    container.html("");
+
+    results.forEach(result => {
+        let html = createPostHtml(result);
+        container.append(html);
+    });
+
+    if(results.length === 0) {
+        container.append('<span class="noResults>Nothing to Show</span>')
+    }
 }

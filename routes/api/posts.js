@@ -5,6 +5,8 @@ const postsController = require('../../controllers/api/postsController');
 
 router.get('/', postsController.getPosts);
 
+router.get('/:id', postsController.getPost);
+
 router.post('/' ,postsController.createPost);
  
 router.put('/:id/like' ,postsController.likePost);

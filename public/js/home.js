@@ -20,7 +20,6 @@ $(document).ready(async () => {
 */ 
 
     $.get("/api/posts", result => {
-            console.log(result);
         result.forEach(element => {
             $(".postsContainer").append(createPostHtml(element));
         });

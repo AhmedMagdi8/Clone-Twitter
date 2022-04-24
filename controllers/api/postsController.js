@@ -15,6 +15,19 @@ exports.getPosts = async (req, res, next) => {
   }
 };
 
+exports.getPost = async (req, res, next) => {
+    try {
+      const postId = req.params.id;
+      const post = await Post.findById(postId)
+      .populate("postedBy")
+      .populate("retweetData");
+      
+      res.status(200).send(post);
+    } catch (err) {
+      res.sendStatus(400);
+    }
+  };
+
 exports.likePost = async (req, res, next) => {
   try {
     const postId = req.params.id;
