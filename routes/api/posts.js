@@ -2,15 +2,17 @@ const express = require('express');
 const router = express.Router();
 
 const postsController = require('../../controllers/api/postsController');
+const middleware = require('../../middleware');
 
-router.get('/', postsController.getPosts);
 
-router.get('/:id', postsController.getPost);
+router.get('/', middleware.authMiddleware, postsController.getPosts);
 
-router.post('/' ,postsController.createPost);
+router.get('/:id',  middleware.authMiddleware, postsController.getPost);
+
+router.post('/' , middleware.authMiddleware, postsController.createPost);
  
-router.put('/:id/like' ,postsController.likePost);
+router.put('/:id/like' , middleware.authMiddleware, postsController.likePost);
  
-router.post('/:id/retweet' ,postsController.retweetPost);
+router.post('/:id/retweet' , middleware.authMiddleware, postsController.retweetPost);
 
 module.exports = router;

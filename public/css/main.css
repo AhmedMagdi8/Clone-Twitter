@@ -222,3 +222,8 @@ h1 {
 .replyFlag a {
     color : var(--blue);
 }
+
+.post .largeFont .postBody,
+.post .largeFont .postFooter {
+    font-size: 30px;
+}

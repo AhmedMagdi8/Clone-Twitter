@@ -49,6 +49,7 @@ $("#replyModal").on("show.bs.modal", (event) => {
     $("#submitReplyButton").data("id", postId);
 
     $.get("/api/posts/"+ postId, post => {
+        post = post.postData;
         let container = $("#originalPostContainer")
         container.html("");
         let html = createPostHtml(post);
@@ -105,6 +106,18 @@ $(document).on("click", ".retweetButton", (event) => {
 
 });
 
+$(document).on("click", ".post", (event) => {
+    let element = $(event.target);
+    let postId = getPostId(element);
+
+    if(postId && !element.is("button")) {
+        window.location.href = '/posts/' + postId;
+
+    }
+
+
+});
+
 function getPostId(element) {
     const isRoot = element.hasClass("post");
     const root = isRoot ? element : element.closest(".post");
@@ -113,7 +126,7 @@ function getPostId(element) {
         return;
     return postId;
 }
-function createPostHtml(postData) {
+function createPostHtml(postData, largeFont = false) {
 
   if(!postData) return alert("post object is null");
 
@@ -131,13 +144,15 @@ function createPostHtml(postData) {
 
   const likedButtonClass = postData.likes.includes(userLoggedIn._id) ? "liked":'';
   const retweetButtonClass = postData.retweetUsers.includes(userLoggedIn._id) ? "retweeted":'';
+  const largeFontClass = largeFont ? 'largeFont': "";
+  
   let retweetText = '';
   if(isRetweet) 
     retweetText = `<span>Retweeted by <a href='/profile/${retweetedBy}'>${retweetedBy}</a></span>`;
 
     
   let replyFlag = "";
-  if(postData.replyTo) {
+  if(postData.replyTo && postData.replyTo._id) {
 
       if(!postData.replyTo._id) {
           return alert('reply to is not pupulated');
@@ -150,13 +165,13 @@ function createPostHtml(postData) {
                    </div>`
   }
 
-  return `<div class="post" data-id='${postData._id}'>
+  return `<div class="post ${largeFontClass}" data-id='${postData._id}'>
                 <div class='postActionContainer'>
                     ${retweetText}
                 </div>
                 <div class="mainContentContainer">
                     <div class="userImageContainer">
-                        <img src='${postedBy.profilePic}'/>
+                        <img src='/${postedBy.profilePic}'/>
                     </div>
                     <div class='postContentContainer'>
                         <div class='header'>
@@ -232,6 +247,10 @@ function timeDifference(current, previous) {
 function outputPosts(results, container) {
     container.html("");
 
+    if(!Array.isArray(results)) {
+        results = [results];
+    }
+
     results.forEach(result => {
         let html = createPostHtml(result);
         container.append(html);
@@ -240,4 +259,22 @@ function outputPosts(results, container) {
     if(results.length === 0) {
         container.append('<span class="noResults>Nothing to Show</span>')
     }
+}
+
+function outputPostsWithReplies(results, container) {
+    container.html("");
+
+    if(results.replyTo && results.replyTo._id ) {
+        let html = createPostHtml(results.replyTo);
+        container.append(html);
+    }
+
+    let mainPostHtml = createPostHtml(results.postData, true);
+    container.append(mainPostHtml);
+
+
+    results.replies.forEach(result => {
+        let html = createPostHtml(result);
+        container.append(html);
+    });
 }

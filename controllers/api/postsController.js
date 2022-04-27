@@ -25,8 +25,27 @@ exports.getPost = async (req, res, next) => {
       .populate("postedBy")
       .populate("retweetData");
 
-      res.status(200).send(post);
+      const results = {
+          postData : post
+      }
+      if(results.postData.replyTo) {
+          results.replyTo = results.postData.replyTo;
+      }
+
+      results.replies = await Post.find({replyTo : postId})
+      .populate("postedBy")
+      .populate("retweetData")
+      .populate("replyTo")
+      .sort({ createdAt: -1 });
+
+      results.replies = await User.populate(results.replies, { path : "retweetData.postedBy"});
+      results.replies = await User.populate(results.replies, { path : "replyTo.postedBy"});
+
+      
+      console.log(results.replies);
+      res.status(200).send(results);
     } catch (err) {
+        console.log(err);
       res.sendStatus(400);
     }
   };
