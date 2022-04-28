@@ -1,3 +1,6 @@
+const Post = require('../models/postModel');
+
+
 exports.getPost = (req, res, next) => {
 
     const payload = {
@@ -9,3 +12,4 @@ exports.getPost = (req, res, next) => {
 
     res.status(200).render('postPage', payload);
 }
+

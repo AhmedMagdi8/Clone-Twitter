@@ -6,4 +6,5 @@ const middleware = require('../middleware');
 
 router.get('/:id' ,middleware.authMiddleware, postController.getPost);
 
+
 module.exports = router;

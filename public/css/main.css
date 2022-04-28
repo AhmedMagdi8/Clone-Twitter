@@ -223,7 +223,12 @@ h1 {
     color : var(--blue);
 }
 
-.post .largeFont .postBody,
-.post .largeFont .postFooter {
-    font-size: 30px;
+.largeFont .postBody, .largeFont .postFooter {
+    font-size: 25px;
+}
+.postContentContainer .header {
+    display:flex;
+}
+.postContentContainer .header .date {
+    flex: 1;
 }

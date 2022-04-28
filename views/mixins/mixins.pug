@@ -28,3 +28,21 @@ mixin createReplyModal(userLoggedIn)
                     button.btn.btn-secondary(type='button', data-bs-dismiss='modal') Close
                     button#submitReplyButton.btn.btn-primary(type='button',disabled="") reply
 
+mixin createDeletePostModal(userLoggedIn)
+    // Modal
+    #deletePostModal.modal.fade(tabindex='-1', aria-labelledby='deletePostModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5#deletePostModalLabel.modal-title Delete
+                    button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+                .modal-body
+                    p You won't be able to delete this.
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-bs-dismiss='modal') Close
+                    button#deletePostButton.btn.btn-primary(type='button') delete
+
+
+mixin createPostModals()
+    +createReplyModal(userLoggedIn)
+    +createDeletePostModal()

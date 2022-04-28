@@ -28,8 +28,13 @@ exports.getPost = async (req, res, next) => {
       const results = {
           postData : post
       }
+      let mainTweet;
       if(results.postData.replyTo) {
-          results.replyTo = results.postData.replyTo;
+           mainTweet = await Post.findOne({_id : results.postData.replyTo})
+          .populate("postedBy")
+          .populate("retweetData")
+          results.replyTo = mainTweet;
+          results.postData.replyTo = mainTweet;
       }
 
       results.replies = await Post.find({replyTo : postId})
@@ -40,9 +45,7 @@ exports.getPost = async (req, res, next) => {
 
       results.replies = await User.populate(results.replies, { path : "retweetData.postedBy"});
       results.replies = await User.populate(results.replies, { path : "replyTo.postedBy"});
-
       
-      console.log(results.replies);
       res.status(200).send(results);
     } catch (err) {
         console.log(err);
@@ -136,7 +139,6 @@ exports.createPost = async (req, res, next) => {
 
   try {
     let newPost = await Post.create(postData);
-    console.log(newPost);
     newPost = await User.populate(newPost, { path: "postedBy" });
     res.status(201).send(newPost);
   } catch (err) {
@@ -144,3 +146,20 @@ exports.createPost = async (req, res, next) => {
     res.sendStatus(400);
   }
 };
+
+
+exports.deletePost = async (req, res, next) => {
+    try {
+        const postId = req.params.id;
+        const deletedPost = await Post.deleteOne({_id: postId});
+        if(deletedPost)
+            res.sendStatus(202);
+
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(400);
+    }
+
+
+}
+

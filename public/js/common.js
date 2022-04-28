@@ -62,7 +62,28 @@ $("#replyModal").on("hidden.bs.modal", (event) => {
     $("#originalPostContainer").html("");
 });
 
+$("#deletePostModal").on("show.bs.modal", (event) => {
+    let button = $(event.relatedTarget);
+    let postId = getPostId(button);
+    $("#deletePostButton").data("id", postId);
+});
 
+$("#deletePostButton").click((event) => {
+    const postId = $(event.target).data("id");
+    $.ajax({
+        url: `/api/posts/${postId}`,
+        type: 'DELETE',
+        success: (data, status, xhr) => {
+            console.log(data);
+            console.log(status);
+            // xhr means status code xml http requests if(xhr.status == 202) alert('deleted');
+            
+            console.log(xhr);
+
+            location.reload();
+        }
+    });
+});
 
 $(document).on("click", ".likedButton", (event) => {
     let button = $(event.target);
@@ -112,7 +133,6 @@ $(document).on("click", ".post", (event) => {
 
     if(postId && !element.is("button")) {
         window.location.href = '/posts/' + postId;
-
     }
 
 
@@ -126,7 +146,9 @@ function getPostId(element) {
         return;
     return postId;
 }
+
 function createPostHtml(postData, largeFont = false) {
+
 
   if(!postData) return alert("post object is null");
 
@@ -144,7 +166,7 @@ function createPostHtml(postData, largeFont = false) {
 
   const likedButtonClass = postData.likes.includes(userLoggedIn._id) ? "liked":'';
   const retweetButtonClass = postData.retweetUsers.includes(userLoggedIn._id) ? "retweeted":'';
-  const largeFontClass = largeFont ? 'largeFont': "";
+  const largeFontClass = largeFont ? 'largeFont': '';
   
   let retweetText = '';
   if(isRetweet) 
@@ -153,6 +175,7 @@ function createPostHtml(postData, largeFont = false) {
     
   let replyFlag = "";
   if(postData.replyTo && postData.replyTo._id) {
+
 
       if(!postData.replyTo._id) {
           return alert('reply to is not pupulated');
@@ -165,13 +188,18 @@ function createPostHtml(postData, largeFont = false) {
                    </div>`
   }
 
+  let deleteButton = "";
+  if(postData.postedBy._id == userLoggedIn._id) {
+    deleteButton = '<button data-id="${postData._id}" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i class="fas fa-times" aria-hidden="true"></i></button>';
+  }
+
   return `<div class="post ${largeFontClass}" data-id='${postData._id}'>
                 <div class='postActionContainer'>
                     ${retweetText}
                 </div>
                 <div class="mainContentContainer">
                     <div class="userImageContainer">
-                        <img src='/${postedBy.profilePic}'/>
+                        <img src='../${postedBy.profilePic}'/>
                     </div>
                     <div class='postContentContainer'>
                         <div class='header'>
@@ -184,7 +212,7 @@ function createPostHtml(postData, largeFont = false) {
                             <span class="date">
                                 ${timestamp}
                             </span>
-                            
+                            ${deleteButton}
                         </div>
                         ${replyFlag}
                         <div class='postBody'>

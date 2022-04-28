@@ -15,4 +15,6 @@ router.put('/:id/like' , middleware.authMiddleware, postsController.likePost);
  
 router.post('/:id/retweet' , middleware.authMiddleware, postsController.retweetPost);
 
+router.delete('/:id', middleware.authMiddleware, postsController.deletePost);
+
 module.exports = router;
