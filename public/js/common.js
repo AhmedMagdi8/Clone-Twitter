@@ -199,7 +199,7 @@ function createPostHtml(postData, largeFont = false) {
                 </div>
                 <div class="mainContentContainer">
                     <div class="userImageContainer">
-                        <img src='../${postedBy.profilePic}'/>
+                        <img src='../.${postedBy.profilePic}'/>
                     </div>
                     <div class='postContentContainer'>
                         <div class='header'>

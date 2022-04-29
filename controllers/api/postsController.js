@@ -3,7 +3,14 @@ const Post = require("../../models/postModel");
 
 exports.getPosts = async (req, res, next) => {
   try {
-    let posts = await Post.find()
+    const searchObject = req.query ? req.query : {};
+    if(searchObject.isReply) {
+        const isReply = searchObject.isReply == "true";
+        searchObject.replyTo = { $exists: isReply };
+        delete searchObject.isReply;
+    }
+
+    let posts = await Post.find(searchObject)
       .populate("postedBy")
       .populate("retweetData")
       .populate("replyTo")
@@ -17,6 +24,7 @@ exports.getPosts = async (req, res, next) => {
     res.sendStatus(400);
   }
 };
+
 
 exports.getPost = async (req, res, next) => {
     try {
