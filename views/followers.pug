@@ -1,0 +1,16 @@
+extends Layouts/main-layout.pug
+
+block content
+    if !profileUser 
+        h1.errorMessage User Not Found! 
+    else 
+        script.
+            let profileUserId = '!{profileUser._id}'; // inject value to page as a variable to show likes
+            let selectedTab = '!{selectedTab}'; // inject value to page as a variable to show likes
+        .tabsContainer 
+            +createTab("Following", `/profile/${profileUser.username}/following`, selectedTab != "followers")
+            +createTab("Followers", `/profile/${profileUser.username}/followers`, selectedTab == "followers")
+        .resultsContainer 
+
+block scripts
+    script(src="/js/followers.js")

@@ -14,6 +14,7 @@ const profileRoutes = require('./routes/profileRoutes');
 
 // Api Routes for posts
 const postsApiRoutes = require('./routes/api/posts');
+const usersApiRoutes = require('./routes/api/users');
 
 
 const app = express();
@@ -35,6 +36,7 @@ app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/logout", logoutRoutes);
 app.use("/api/posts/", postsApiRoutes);
+app.use("/api/users/", usersApiRoutes);
 app.use("/posts", postRoutes);
 app.use("/profile", profileRoutes);
 

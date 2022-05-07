@@ -138,6 +138,44 @@ $(document).on("click", ".post", (event) => {
 
 });
 
+$(document).on("click", ".followButton", (event) => {
+    let button = $(event.target);
+    let userId = button.data().user;
+    $.ajax({
+        url: `/api/users/${userId}/follow`,
+        type: 'PUT',
+        success: (data, status, xhr) => {
+            if(xhr.status == 404) {
+                alert("User not found!");
+                return;
+            }
+            let difference;
+            if(data.following && data.following.includes(userId)) {
+                button.addClass('following');
+                button.text("Following");
+                difference = 1;
+        
+            } else {
+                button.removeClass('following');
+                button.text("Follow");
+                difference = -1;
+
+            }
+            let followersLabel = $("#followersValue");
+            let followersText = followersLabel.text();
+            followersLabel.text(parseInt(followersText)+difference);
+
+            // if(followersLabel.length != 0) {
+            //     let followersText = followersLabel.text();
+            //     followersLabel.text(parseInt(followersText)+1);
+            // } else {
+            //     let followersText = followersLabel.text();
+            //     followersLabel.text(Number(followersText)-1);
+
+            // }
+        }
+    });
+});
 function getPostId(element) {
     const isRoot = element.hasClass("post");
     const root = isRoot ? element : element.closest(".post");
@@ -199,7 +237,7 @@ function createPostHtml(postData, largeFont = false) {
                 </div>
                 <div class="mainContentContainer">
                     <div class="userImageContainer">
-                        <img src='../.${postedBy.profilePic}'/>
+                        <img src='${postedBy.profilePic}'/>
                     </div>
                     <div class='postContentContainer'>
                         <div class='header'>

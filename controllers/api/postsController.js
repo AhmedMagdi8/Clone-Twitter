@@ -9,7 +9,27 @@ exports.getPosts = async (req, res, next) => {
         searchObject.replyTo = { $exists: isReply };
         delete searchObject.isReply;
     }
+    console.log(searchObject);
+    if(searchObject.followingOnly !== undefined) {
 
+        const followingOnly = searchObject.followingOnly == "true";
+
+
+        if(followingOnly) {
+            let objectIds = [];
+            if(!req.session.user.following) {
+                req.session.user.following = [];
+            }
+            req.session.user.following.forEach(element => {
+                objectIds.push(element);
+            });
+            objectIds.push(req.session.user._id);
+            searchObject.postedBy = { $in: objectIds };
+        }
+
+        delete searchObject.followingOnly;
+
+    }
     let posts = await Post.find(searchObject)
       .populate("postedBy")
       .populate("retweetData")

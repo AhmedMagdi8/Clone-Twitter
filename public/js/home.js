@@ -19,7 +19,7 @@ $(document).ready(async () => {
     FOR THAT REASON WE WILL USE JQUERY AJAX REQUEST
 */ 
 
-    $.get("/api/posts", result => {
+    $.get("/api/posts",{ followingOnly:true} ,result => {
         result.forEach(element => {
             $(".postsContainer").append(createPostHtml(element));
         });

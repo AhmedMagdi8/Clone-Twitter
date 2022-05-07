@@ -7,18 +7,25 @@ block content
         script.
             let profileUserId = '!{profileUser._id}'; // inject value to page as a variable to show likes
             let selectedTab = '!{selectedTab}'; // inject value to page as a variable to show likes
+        - followerCount = profileUser.followers.length;
+        - followingCount = profileUser.following.length;
 
         .profileHeaderContainer 
             .coverPhotoContainer 
 
                 .userImageContainer 
-                    img(src="/"+profileUser.profilePic, alt="User profile image")
+                    img(src=profileUser.profilePic, alt="User profile image")
 
             .profileButtonsContainer 
                 if profileUser._id != userLoggedIn._id 
                     a.profileButton(href=`/messages/${profileUser._id}`)
                         i.fas.fa-envelope
-                    +createFollowButton(profileUser, true)
+                    - let profileUserId = profileUser._id.toString();
+                    - if (userLoggedIn.following && userLoggedIn.following.includes(profileUserId))
+                        +createFollowButton(profileUser, true)
+                    - else 
+                        +createFollowButton(profileUser, false)
+
 
             .userDetailsContainer
                 span.displayName #{profileUser.firstName} #{profileUser.lastName}
@@ -26,11 +33,11 @@ block content
                 span.username #{profileUser.description}
                 .followersContainer 
                     a(href=`/profile/${profileUser.username}/following`)
-                        span.value #{0}
+                        span.value #{followingCount}
                         span following
 
                     a(href=`/profile/${profileUser.username}/followers`)
-                        span.value #{0}
+                        span#followersValue.value #{followerCount}
                         span followers
         .tabsContainer 
             +createTab("Posts", `/profile/${profileUser.username}`, selectedTab != "replies")

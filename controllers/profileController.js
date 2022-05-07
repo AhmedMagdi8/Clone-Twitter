@@ -31,6 +31,20 @@ exports.getProfileReplies = async (req, res, next) => {
 
 }
 
+exports.getFollowers = async (req, res, next) => {
+    const payload = await getPayload(req.params.username, req.session.user);
+    payload.selectedTab = "followers";
+    res.status(200).render("followers", payload);
+
+}
+
+
+exports.getFollowing = async (req, res, next) => {
+    const payload = await getPayload(req.params.username, req.session.user);
+    payload.selectedTab = "following";
+    res.status(200).render("followers", payload);
+
+}
 
 
 async function getPayload(username, userLoggedIn) {
