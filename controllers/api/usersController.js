@@ -81,3 +81,28 @@ exports.handlePrfilePic = async(req, res, next) => {
 
 
 };
+
+exports.handleCoverPhoto = async(req, res, next) => {
+    if(!req.file) {
+        console.log("No file was uploaded with ajax request");
+        return res.sendStatus(400);
+    }
+    let filePath = `/uploads/images/${req.file.filename}.png`;
+    let tempPath = req.file.path;
+    let targetPath = path.join(__dirname, `../../${filePath}`);
+
+    fs.rename(tempPath,targetPath, async err => {
+        if(err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+
+        req.session.user = await User.findByIdAndUpdate(req.session.user._id, {coverPhoto: filePath}, {new : true});
+
+        // 204 means no content
+        return res.sendStatus(204);
+
+    })
+
+
+};

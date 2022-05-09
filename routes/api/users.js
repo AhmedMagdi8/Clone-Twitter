@@ -10,6 +10,7 @@ router.put('/:userId/follow' , middleware.authMiddleware, usersController.follow
 router.get('/:userId/followers' , middleware.authMiddleware, usersController.getFollowers);
 router.get('/:userId/following' , middleware.authMiddleware, usersController.getFollowing);
 router.post('/profilePicture' , middleware.authMiddleware,upload.single('croppedImage') ,usersController.handlePrfilePic);
+router.post('/coverPhoto' , middleware.authMiddleware,upload.single('croppedImage') ,usersController.handleCoverPhoto);
 
 
 module.exports = router;
