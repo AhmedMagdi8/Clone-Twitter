@@ -15,6 +15,10 @@ block content
 
                 .userImageContainer 
                     img(src=profileUser.profilePic, alt="User profile image")
+                    if profileUser._id == userLoggedIn._id 
+                        button.profilePictureButton(data-bs-toggle="modal", data-bs-target="#ImageUploadModal")
+                            i.fas.fa-camera 
+
 
             .profileButtonsContainer 
                 if profileUser._id != userLoggedIn._id 
@@ -45,5 +49,6 @@ block content
 
         .postsContainer
         +createPostModals(userLoggedIn)
+        +createImageUploadModal()
 block scripts
     script(src="/js/profile.js")

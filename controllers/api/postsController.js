@@ -9,7 +9,6 @@ exports.getPosts = async (req, res, next) => {
         searchObject.replyTo = { $exists: isReply };
         delete searchObject.isReply;
     }
-    console.log(searchObject);
     if(searchObject.followingOnly !== undefined) {
 
         const followingOnly = searchObject.followingOnly == "true";

@@ -1,3 +1,6 @@
+// Global variables
+let cropper;
+
 $("#postTextarea, #replyTextarea").keyup((event) => {
   const value = event.target.value.trim();
 
@@ -67,6 +70,53 @@ $("#deletePostModal").on("show.bs.modal", (event) => {
     let postId = getPostId(button);
     $("#deletePostButton").data("id", postId);
 });
+
+$("#filePhoto").change(event => {
+    let input = $(event.target)[0];
+    if(input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = (e) => {
+            let image = document.getElementById("imagePreview");
+            image.src = e.target.result;
+
+            if(cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(image, {
+                aspectRatio: 1 / 1,
+                background: false
+            });
+
+        }
+        reader.readAsDataURL(input.files[0])
+    }
+});
+
+$("#ImageUploadButton").click(event => {
+    let canvas = cropper.getCroppedCanvas();
+    if(!canvas) {
+        alert("make sure it's an image file");
+        return;
+    }
+    // blob is a binary large object used to images and videos
+    canvas.toBlob((blob) => {
+        let formData = new FormData();
+        formData.append("croppedImage", blob);
+        // process data forces jquery not to convert form data to string
+        // contentType used for forms that submit files
+        // it forces jq not to add content type header in this request 
+        $.ajax({
+            url: "/api/users/profilePicture",
+            type: "POST",
+            data: formData,
+            processData:false,
+            contentType: false,
+            success: () => location.reload() 
+        });
+    })
+
+})
+
 
 $("#deletePostButton").click((event) => {
     const postId = $(event.target).data("id");
@@ -176,6 +226,8 @@ $(document).on("click", ".followButton", (event) => {
         }
     });
 });
+
+
 function getPostId(element) {
     const isRoot = element.hasClass("post");
     const root = isRoot ? element : element.closest(".post");
