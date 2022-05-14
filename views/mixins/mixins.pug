@@ -45,6 +45,8 @@ mixin createDeletePostModal(userLoggedIn)
 mixin createPostModals()
     +createReplyModal(userLoggedIn)
     +createDeletePostModal()
+    +createpinPostButtonModal()
+    +createunPinPostButtonModal()
 
 mixin createFollowButton(user, isFollowing)
     - text = isFollowing ? "Following" : "Follow"
@@ -88,6 +90,30 @@ mixin createCoverUploadModal()
                     button.btn.btn-secondary(type='button', data-bs-dismiss='modal') Cancel
                     button#coverPhotoButton.btn.btn-primary(type='button') Save
 
-    //- - className = isSelected ? "tab active": "tab"
-    //- a(href=href, class=className) 
-    //-     span #{name}
+mixin createpinPostButtonModal()
+    // Modal
+    #pinPostModal.modal.fade(tabindex='-1', aria-labelledby='ImageUploadModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5#pinPostModalLabel.modal-title Do you want to pin the post ?
+                    button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+                .modal-body
+                    p this post will appear at the top of profile
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-bs-dismiss='modal') Cancel
+                    button#pinPostButton.btn.btn-primary(type='button') yes
+
+mixin createunPinPostButtonModal()
+    // Modal
+    #unPinPostModal.modal.fade(tabindex='-1', aria-labelledby='ImageUploadModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5#unPinPostModalLabel.modal-title  Unpin the post ?
+                    button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+                .modal-body
+                    p Unpin the post
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-bs-dismiss='modal') Cancel
+                    button#unPinPostButton.btn.btn-primary(type='button') yes

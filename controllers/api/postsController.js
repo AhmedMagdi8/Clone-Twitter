@@ -186,7 +186,24 @@ exports.deletePost = async (req, res, next) => {
         console.log(err);
         res.sendStatus(400);
     }
+}
 
+exports.pinPost = async (req, res, next) => {
+    try {
 
+        if(req.body.pinned) {
+            await Post.updateMany({ postedBy: req.session.user }, { pinned: false })
+        }
+        const postId = req.params.id;
+        console.log("hello");
+        console.log(postId);
+        await Post.findByIdAndUpdate(postId, req.body);
+        console.log("hello");
+        res.sendStatus(204);
+
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(400);
+    }
 }
 

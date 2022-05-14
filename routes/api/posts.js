@@ -17,4 +17,7 @@ router.post('/:id/retweet' , middleware.authMiddleware, postsController.retweetP
 
 router.delete('/:id', middleware.authMiddleware, postsController.deletePost);
 
+router.put('/:id', middleware.authMiddleware, postsController.pinPost);
+
+
 module.exports = router;

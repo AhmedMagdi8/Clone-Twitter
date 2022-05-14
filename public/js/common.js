@@ -71,6 +71,19 @@ $("#deletePostModal").on("show.bs.modal", (event) => {
     $("#deletePostButton").data("id", postId);
 });
 
+$("#pinPostModal").on("show.bs.modal", (event) => {
+    let button = $(event.relatedTarget);
+    let postId = getPostId(button);
+    $("#pinPostButton").data("id", postId);
+});
+
+$("#unPinPostModal").on("show.bs.modal", (event) => {
+    let button = $(event.relatedTarget);
+    let postId = getPostId(button);
+    $("#unPinPostButton").data("id", postId);
+});
+
+
 $("#filePhoto").change(event => {
     let input = $(event.target)[0];
     if(input.files && input.files[0]) {
@@ -179,6 +192,42 @@ $("#deletePostButton").click((event) => {
             
             console.log(xhr);
 
+            location.reload();
+        }
+    });
+});
+
+$("#unPinPostButton").click((event) => {
+    const postId = $(event.target).data("id");
+    $.ajax({
+        url: `/api/posts/${postId}`,
+        type: 'PUT',
+        data: {pinned: false},
+        success: (data, status, xhr) => {
+
+            if(xhr.status != 204) {
+                alert("could not unpin the post"+xhr.status)
+            }
+            location.reload();
+        }
+    });
+});
+
+$("#pinPostButton").click((event) => {
+    const postId = $(event.target).data("id");
+    $.ajax({
+        url: `/api/posts/${postId}`,
+        type: 'PUT',
+        data: {pinned: true},
+        success: (data, status, xhr) => {
+
+            if(xhr.status != 204) {
+                alert("could not pin the post"+xhr.status)
+            }
+            // console.log(data);
+            // console.log(status);
+            // console.log(xhr);
+            // xhr means status code xml http requests if(xhr.status == 202) alert('deleted');
             location.reload();
         }
     });
@@ -327,9 +376,20 @@ function createPostHtml(postData, largeFont = false) {
                    </div>`
   }
 
-  let deleteButton = "";
+  let buttons = "";
+  let pinnedPostText= "";
   if(postData.postedBy._id == userLoggedIn._id) {
-    deleteButton = '<button data-id="${postData._id}" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i class="fas fa-times" aria-hidden="true"></i></button>';
+      let pinnedClass= "";
+      let dataTarget = "#pinPostModal";
+      if(postData.pinned === true) {
+        pinnedClass= "active";
+        dataTarget = "#unPinPostModal"
+        pinnedPostText = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>"
+      }
+    buttons = 
+    `<button class="pinButton ${pinnedClass}" data-id="${postData._id}" data-bs-toggle="modal" data-bs-target="${dataTarget}"><i class="fa-solid fa-thumbtack"></i></button>
+    <button data-id="${postData._id}" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i class="fas fa-times" aria-hidden="true"></i></button>`;
+
   }
 
   return `<div class="post ${largeFontClass}" data-id='${postData._id}'>
@@ -341,6 +401,8 @@ function createPostHtml(postData, largeFont = false) {
                         <img src='${postedBy.profilePic}'/>
                     </div>
                     <div class='postContentContainer'>
+                        <div class='pinnedPostText'>${pinnedPostText}</div>
+
                         <div class='header'>
                             <a href='/profile/${postedBy.username}' class="displayName">
                                 ${diplayName}
@@ -351,7 +413,7 @@ function createPostHtml(postData, largeFont = false) {
                             <span class="date">
                                 ${timestamp}
                             </span>
-                            ${deleteButton}
+                            ${buttons}
                         </div>
                         ${replyFlag}
                         <div class='postBody'>
