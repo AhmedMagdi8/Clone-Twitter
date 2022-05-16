@@ -13,10 +13,12 @@ const postRoutes = require('./routes/postRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const searchRoutes = require('./routes/searchRoutes');
+const messagesRoutes = require('./routes/messagesRoutes');
 
 // Api Routes for posts
 const postsApiRoutes = require('./routes/api/posts');
 const usersApiRoutes = require('./routes/api/users');
+const chatsRoutes = require('./routes/api/chats');
 
 
 const app = express();
@@ -39,11 +41,12 @@ app.use("/register", registerRoutes);
 app.use("/logout", logoutRoutes);
 app.use("/api/posts/", postsApiRoutes);
 app.use("/api/users/", usersApiRoutes);
+app.use("/api/chats/", chatsRoutes);
 app.use("/posts", postRoutes);
 app.use("/profile", profileRoutes);
 app.use("/uploads", uploadRoutes);
 app.use("/search", searchRoutes);
-
+app.use("/messages", messagesRoutes);
 
 app.get('/', middleware.authMiddleware ,(req, res, next) => {
     
