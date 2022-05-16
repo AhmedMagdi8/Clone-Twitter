@@ -11,6 +11,7 @@ router.get('/:userId/followers' , middleware.authMiddleware, usersController.get
 router.get('/:userId/following' , middleware.authMiddleware, usersController.getFollowing);
 router.post('/profilePicture' , middleware.authMiddleware,upload.single('croppedImage') ,usersController.handlePrfilePic);
 router.post('/coverPhoto' , middleware.authMiddleware,upload.single('croppedImage') ,usersController.handleCoverPhoto);
+router.get('/' , middleware.authMiddleware, usersController.getUsersSearch);
 
 
 module.exports = router;

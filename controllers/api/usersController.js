@@ -2,6 +2,27 @@ const User = require("../../models/userModel");
 const path = require('path');
 const fs = require('fs');
 
+exports.getUsersSearch = async(req, res, next) => {
+    let searchObj = req.query;
+    if(searchObj.search) {
+        searchObj = {
+            $or: [
+                { firstName: { $regex: searchObj.search, $options: "i"} },
+                { lastName:  { $regex: searchObj.search, $options: "i"} },
+                { username:  { $regex: searchObj.search, $options: "i"} },
+            ]
+        }
+    }   
+    try {
+        const users = await User.find(searchObj);
+        res.status(200).send(users);
+
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+}
+
 exports.followHandler = async (req, res, next) => {
   try {
     const userId = req.params.userId;

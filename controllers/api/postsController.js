@@ -9,6 +9,14 @@ exports.getPosts = async (req, res, next) => {
         searchObject.replyTo = { $exists: isReply };
         delete searchObject.isReply;
     }
+
+    if(searchObject.search) {
+        // ignore the case options: i
+        searchObject.content = { $regex: searchObject.search, $options: "i"}
+        delete searchObject.search;
+
+    }
+
     if(searchObject.followingOnly !== undefined) {
 
         const followingOnly = searchObject.followingOnly == "true";
