@@ -18,8 +18,7 @@ exports.createChat = async(req, res, next) => {
     users.push(req.session.user);
 
     let chatData = {
-        users: users,
-        isGroupChat: ture
+        users: users
     }
 
     try {
@@ -35,8 +34,10 @@ exports.createChat = async(req, res, next) => {
 exports.getChats = async(req, res, next) => {
     
     try {
-    let chats = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id} }})
-    res.status(200).send(chats);
+
+        let chats = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id} }})
+        .populate("users");
+        res.status(200).send(chats);
 
 } catch(err) {
         console.log(err);
