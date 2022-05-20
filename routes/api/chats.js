@@ -9,6 +9,9 @@ const middleware = require('../../middleware');
 
 router.post('/' , middleware.authMiddleware, chatsController.createChat);
 router.get('/' , middleware.authMiddleware, chatsController.getChats);
+router.get('/:chatId' , middleware.authMiddleware, chatsController.getChat);
+
+router.put('/:chatId' , middleware.authMiddleware, chatsController.updateChatName);
 
 
 module.exports = router;

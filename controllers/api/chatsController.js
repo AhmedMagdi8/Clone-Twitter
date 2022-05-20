@@ -37,8 +37,36 @@ exports.getChats = async(req, res, next) => {
 
         let chats = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id} }})
         .populate("users")
-        .sort({ updatedAt: 1}); // 1 is ascending
+        .sort({ updatedAt: -1}); // -1 is ascending
         res.status(200).send(chats);
+
+} catch(err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+exports.getChat = async(req, res, next) => {
+    
+    try {
+
+        let chat = await Chat.findOne({ _id: req.params.chatId, users: { $elemMatch: { $eq: req.session.user._id} }})
+        .populate("users");
+
+        res.status(200).send(chat);
+
+} catch(err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+exports.updateChatName = async(req, res, next) => {
+    
+    try {
+
+        await Chat.findByIdAndUpdate(req.params.chatId, req.body);
+        return res.sendStatus(204)
 
 } catch(err) {
         console.log(err);

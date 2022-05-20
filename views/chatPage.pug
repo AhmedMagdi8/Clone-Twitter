@@ -11,7 +11,7 @@ block content
         .chatPageContainer 
             .chatTitleBarContainer 
                 +createChatImage(chat, userLoggedIn)
-                span#chatName This is the chat
+                span#chatName(data-bs-toggle="modal", data-bs-target="#chatNameModal") !{chat.chatName}
             .mainContentContainer 
                 .chatContainer 
                     .chatMessages
@@ -19,5 +19,6 @@ block content
                         textarea(name="messageInput", placeholder="Type a message...") 
                         button.sendMessageButton 
                             i.fas.fa-paper-plane
+        +createchatNameModal(chat)
 block scripts
     script(src="/js/chatPage.js")

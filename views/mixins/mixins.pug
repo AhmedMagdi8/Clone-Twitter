@@ -139,3 +139,17 @@ mixin createChatImage(chatData, userLoggedIn)
                 - break
             img(src=user.profilePic, alt="User Profile pic", title=user.firstName)
             - i++
+
+mixin createchatNameModal(chat)
+    // Modal
+    #chatNameModal.modal.fade(tabindex='-1', aria-labelledby='chatNameModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5#chatNameModalLabel.modal-title  Change the chat name?
+                    button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+                .modal-body
+                    input#chatNameTextbox(type="text",placeholder="Enter a name for this chat", value=chat.chatName)
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-bs-dismiss='modal') Cancel
+                    button#chatNameButton.btn.btn-primary(type='button') save
