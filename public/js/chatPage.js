@@ -1,6 +1,6 @@
 
 $(document).ready(() => {
-    $.get(`/api/chat/${chatId}`, data => {
+    $.get(`/api/chats/${chatId}`, data => {
         $("#chatName").text(getChatName(data));
     })
 });
@@ -18,7 +18,6 @@ $("#chatNameButton").click(e => {
             chatName : name
         },
         success: (data, status, xhr) => {
-            console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
             if(xhr.status != 204) {
                 alert("couldn't update")
             } else {
@@ -26,9 +25,35 @@ $("#chatNameButton").click(e => {
             }
         }
     });
-
-
 })
+
+$(".inputTextbox").keydown(e => {
+    if(e.which === 13 && !e.shiftKey) { // new line if shift is pressed
+        messageSubmitted();
+        return false; // prevent default behaviour
+    }
+});
+
+$(".sendMessageButton").click(e => {
+    messageSubmitted();
+});
+
+
+function messageSubmitted() {
+    const content = $(".inputTextbox").val().trim();
+
+    if(content) {
+        sendMessage(content);
+        $(".inputTextbox").val("");
+    }
+
+}
+
+function sendMessage(content) {
+    $.post("/api/messages", { content: content, chatId: chatId}, (data,status,xhr) => {
+        console.log(data);
+    })
+}
 
 
 function getChatName(chatData) {
@@ -50,3 +75,5 @@ function getOtherChatUsers(users) {
     }
     return users.filter(u => u._id !== userLoggedIn._id);
 }
+
+
