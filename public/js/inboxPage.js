@@ -28,14 +28,12 @@ function createChatHtml(chatData) {
     let latestMessage = "Latest message"
 
     return `<a href='/messages/${chatData._id}' class='resultsListItem'>
-        ${image}
-        <div class='resultsDetailsContainer ellipsis'>
-            <span class="heading ellipsis">${chatName}</span>
-            <span class="subText ellipsis">${latestMessage}</span>
-
-        </div>
-    </a>
-    `
+                ${image}
+                <div class='resultsDetailsContainer ellipsis'>
+                    <span class="heading ellipsis">${chatName}</span>
+                    <span class="subText ellipsis">${latestMessage}</span>
+                </div>
+            </a>`
 }
 
 
