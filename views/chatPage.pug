@@ -13,8 +13,10 @@ block content
                 +createChatImage(chat, userLoggedIn)
                 span#chatName(data-bs-toggle="modal", data-bs-target="#chatNameModal") !{chat.chatName}
             .mainContentContainer 
-                .chatContainer 
-                    .chatMessages
+                .loadingSpinnerContainer 
+                    img(src="/images/giphy.gif", alt="loading spinner")
+                .chatContainer(style="visibility:hidden")
+                    ul.chatMessages
                     .footer 
                         textarea.inputTextbox(name="messageInput", placeholder="Type a message...")
                         button.sendMessageButton 

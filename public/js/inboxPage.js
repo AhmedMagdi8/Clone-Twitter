@@ -25,8 +25,8 @@ function createChatHtml(chatData) {
     let chatName = getChatName(chatData);
 
     let image =getChatImageElement(chatData);
-    let latestMessage = "Latest message"
-
+    let latestMessage = getLatestMessage(chatData.latestMessage);
+    
     return `<a href='/messages/${chatData._id}' class='resultsListItem'>
                 ${image}
                 <div class='resultsDetailsContainer ellipsis'>
@@ -34,6 +34,15 @@ function createChatHtml(chatData) {
                     <span class="subText ellipsis">${latestMessage}</span>
                 </div>
             </a>`
+}
+
+function getLatestMessage(latestMessage) {
+    if(latestMessage) {
+        const sender = latestMessage.sender;
+        return `${sender.firstName} ${sender.lastName}: ${latestMessage.content}`;
+
+    }
+    return "New Chat"
 }
 
 

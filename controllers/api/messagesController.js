@@ -16,7 +16,11 @@ exports.postMessage = async(req, res, next) => {
             chat: req.body.chatId
         }
 
-        const result = await Message.create(newMessage);
+        let result = await Message.create(newMessage);
+        result = await result.populate("sender");
+        result = await result.populate("chat");
+        
+        await Chat.findByIdAndUpdate(req.body.chatId, {latestMessage: result});
         res.status(201).send(result);
     } catch(err) {
         console.log(err);

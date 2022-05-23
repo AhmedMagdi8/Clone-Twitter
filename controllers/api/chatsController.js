@@ -1,5 +1,6 @@
 const User = require("../../models/userModel");
 const Chat = require("../../models/chatModel");
+const Message = require("../../models/messageModel");
 
 
 exports.createChat = async(req, res, next) => {
@@ -37,7 +38,10 @@ exports.getChats = async(req, res, next) => {
 
         let chats = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id} }})
         .populate("users")
+        .populate("latestMessage")
         .sort({ updatedAt: -1}); // -1 is ascending
+
+        chats = await User.populate(chats, { path: "latestMessage.sender"});
         res.status(200).send(chats);
 
 } catch(err) {
@@ -57,6 +61,21 @@ exports.getChat = async(req, res, next) => {
 
 } catch(err) {
         console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+
+exports.getFullChat = async(req, res, next) => {
+    
+    try {
+        let messages = await Message.find({ chat:  req.params.chatId })
+        .populate("sender");
+        res.status(200).send(messages);
+
+} catch(err) {
+        console.log(err);
+        console.log("I am in the getFullChat");
         return res.sendStatus(400);
     }
 }
