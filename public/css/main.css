@@ -674,10 +674,6 @@ h1 {
     list-style: none;
     display: flex;
     align-items: flex-end; /* push profile page to the bottom */
-    /* to fix safari issues    
-    flex-shrink: 0;
-    -webkit-flex: 0;
-    */ 
 }
 
 .chatMessages .message .messageContainer {
@@ -687,17 +683,30 @@ h1 {
     flex-wrap: wrap;
 }
 
+.typingPic img ,
 .chatMessages .message .messageBody {
     background-color: #f1f0f0;
     padding: 6px 12px;
     border-radius: 18px;
     font-size: 14px;
     width: 100%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    min-width: 0px;
+    /* to break line if it exceeds the width */
+    word-wrap: break-word; 
+
 }
 
+.typingPic img {
+    height: 35px;
+    width: 80px;
+    background-color: white;
+
+}
+
+.typingPic {
+    padding: 0 var(--spacing);
+    padding-bottom: 0;
+    display: none;
+}
 
 
 .chatMessages .message.mine .messageContainer {
@@ -789,3 +798,5 @@ h1 {
     width: 60%;
     max-width: 100px;
 }
+
+

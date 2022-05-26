@@ -3,8 +3,8 @@ const path = require('path');
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-
 const connectDB = require('./database');
+
 const middleware = require('./middleware');
 const loginRoutes = require('./routes/loginRoutes');
 const registerRoutes = require('./routes/registerRoutes');
@@ -20,6 +20,7 @@ const postsApiRoutes = require('./routes/api/posts');
 const usersApiRoutes = require('./routes/api/users');
 const chatsRoutes = require('./routes/api/chats');
 const apiMessagesRoutes = require('./routes/api/messages');
+const { join } = require('path');
 
 
 const app = express();
@@ -62,13 +63,53 @@ app.get('/', middleware.authMiddleware ,(req, res, next) => {
 
 
 
-    connectDB()
-    .then(() => {
-        app.listen(port, () => {
-            console.log('Server is Up and running');
+let io = require("./socket").getIo();
+connectDB()
+.then(() => {
+
+    const server = app.listen(port, () => {
+        console.log('Server is Up and running');
+        io = require("./socket").createSocket(server);
+        io.on("connection", socket => {
+
+            socket.on("setup", userData => {
+                socket.join(userData._id);
+                socket.emit("connected");
+            });
+
+            socket.on("join room", room => {
+                socket.join(room);
+            });
+
+            socket.on("typing", room => {
+                // any one in this room will get the typing notification
+                socket.in(room).emit("typing");
+            });
+
+            socket.on("stop typing", room => {
+                socket.in(room).emit("stop typing");
+            });
+
+            socket.on("new message", newMessage => {
+                let chat = newMessage.chat;
+                if(!chat.users) return console.log("chat.ussers not found");
+                
+                chat.users.forEach(user => {
+                    if(user._id == newMessage.sender._id) return;
+                    socket.in(user._id).emit("message received", newMessage);
+
+                })
+
+
+            });
+
         });
-    }).catch(e => {
-        console.log("error connecting to the db");
-    });
+        
+    });        
+
+}).catch(e => {
+    console.log("error connecting to the db");
+});
 
 
+    

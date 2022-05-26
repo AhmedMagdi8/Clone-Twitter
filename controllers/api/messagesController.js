@@ -19,7 +19,8 @@ exports.postMessage = async(req, res, next) => {
         let result = await Message.create(newMessage);
         result = await result.populate("sender");
         result = await result.populate("chat");
-        
+        result = await User.populate(result, { path: "chat.users"});
+
         await Chat.findByIdAndUpdate(req.body.chatId, {latestMessage: result});
         res.status(201).send(result);
     } catch(err) {

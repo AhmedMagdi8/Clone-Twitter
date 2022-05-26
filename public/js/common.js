@@ -651,3 +651,11 @@ function updateSelectedUsersHtml() {
     $("#selectedUsers").prepend(elements);
 
 }
+
+function messageReceived(newMessage) {
+    if($(".chatContainer").length == 0) {
+        // show notification
+    } else {
+        addChatMessageHtml(newMessage);
+    }
+}
