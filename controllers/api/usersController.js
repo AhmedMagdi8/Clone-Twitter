@@ -1,4 +1,6 @@
 const User = require("../../models/userModel");
+const Notification = require("../../models/notificationModel");
+
 const path = require('path');
 const fs = require('fs');
 
@@ -44,6 +46,10 @@ exports.followHandler = async (req, res, next) => {
     await User.findByIdAndUpdate(userId, {
       [option]: { followers: req.session.user._id },
     });
+
+    if(!isFollowing) {
+        await Notification.insertNotification(userId, req.session.user._id,"follow", req.session.user._id)
+    }
     res.status(200).send(req.session.user);
   } catch (err) {
     res.sendStatus(404);

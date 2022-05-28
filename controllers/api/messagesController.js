@@ -1,6 +1,7 @@
 const User = require("../../models/userModel");
 const Chat = require("../../models/chatModel");
 const Message = require("../../models/messageModel");
+const Notification = require("../../models/notificationModel");
 
 
 exports.postMessage = async(req, res, next) => {
@@ -21,10 +22,24 @@ exports.postMessage = async(req, res, next) => {
         result = await result.populate("chat");
         result = await User.populate(result, { path: "chat.users"});
 
-        await Chat.findByIdAndUpdate(req.body.chatId, {latestMessage: result});
+        let chat = await Chat.findByIdAndUpdate(req.body.chatId, {latestMessage: result});
+
+        insertNotification(chat, result)
+    
         res.status(201).send(result);
     } catch(err) {
         console.log(err);
         return res.sendStatus(400);
     }
+}
+
+
+function insertNotification(chat, message) {
+    chat.users.forEach(userId => {
+        if(userId == message.sender._id.toString()) {
+            return
+        }
+
+        Notification.insertNotification(userId, message.sender._id, "newMessage", message.chat._id);
+    });
 }

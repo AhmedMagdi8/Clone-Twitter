@@ -1,5 +1,6 @@
 const User = require("../../models/userModel");
 const Post = require("../../models/postModel");
+const Notification = require("../../models/notificationModel");
 
 exports.getPosts = async (req, res, next) => {
   try {
@@ -111,6 +112,9 @@ exports.likePost = async (req, res, next) => {
         { new: true }
       );
 
+    if(!isLiked) {
+        await Notification.insertNotification(post.postedBy, userId,"postLike", post._id)
+    }
     res.status(200).send(post);
 
   } catch (err) {
@@ -147,7 +151,10 @@ exports.retweetPost = async (req, res, next) => {
           { [option]: { retweetUsers: userId } },
           { new: true }
         );
-  
+        if(!deletedPost) {
+            await Notification.insertNotification(post.postedBy, userId,"retweet", post._id)
+        }
+
       res.status(200).send(post);
   
     } catch (err) {
@@ -175,6 +182,11 @@ exports.createPost = async (req, res, next) => {
   try {
     let newPost = await Post.create(postData);
     newPost = await User.populate(newPost, { path: "postedBy" });
+    newPost = await Post.populate(newPost, { path: "replyTo" });
+
+    if(newPost.replyTo) {
+        await Notification.insertNotification(newPost.replyTo.postedBy, req.session.user._id,"reply", newPost._id)
+    }
     res.status(201).send(newPost);
   } catch (err) {
     console.log(err);
