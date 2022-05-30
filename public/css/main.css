@@ -799,4 +799,10 @@ h1 {
     max-width: 100px;
 }
 
+.resultsListItem.active {
+    background-color: var(--blueBackground);
+}
 
+.resultsListItem.notification * {
+    pointer-events: none;
+}

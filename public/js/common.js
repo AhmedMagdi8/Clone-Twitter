@@ -373,7 +373,18 @@ $(document).on("click", ".followButton", (event) => {
     });
 });
 
+$(document).on("click", ".notification.active", (e) => {
+    console.log("kjiuuiohi");
+    const container = $(e.target);
+    const notificationId = container.data().id;
 
+    const href = container.attr("href");
+    e.preventDefault();
+
+    const callback = () => window.location = href;
+
+    markNotificationAsOpened(notificationId, callback);
+})
 function getPostId(element) {
     const isRoot = element.hasClass("post");
     const root = isRoot ? element : element.closest(".post");
@@ -658,4 +669,20 @@ function messageReceived(newMessage) {
     } else {
         addChatMessageHtml(newMessage);
     }
+}
+
+function markNotificationAsOpened(notification=null, callback=null) {
+    if(!callback) {
+        callback = () => location.reload();
+    }
+        const url = notification != null ? `/api/notifications/${notification}/markAsOpened`: `/api/notifications/markAsOpened`;
+        $.ajax({
+            url: url,
+            type:"PUT",
+            success: () => {
+                callback();
+            }
+        })
+    
+
 }

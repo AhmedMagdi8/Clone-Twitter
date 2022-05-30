@@ -21,6 +21,8 @@ const postsApiRoutes = require('./routes/api/posts');
 const usersApiRoutes = require('./routes/api/users');
 const chatsRoutes = require('./routes/api/chats');
 const apiMessagesRoutes = require('./routes/api/messages');
+const apiNotificationsRoutes = require('./routes/api/notifications');
+
 const { join } = require('path');
 
 
@@ -46,6 +48,8 @@ app.use("/api/posts/", postsApiRoutes);
 app.use("/api/users/", usersApiRoutes);
 app.use("/api/chats/", chatsRoutes);
 app.use("/api/messages/", apiMessagesRoutes);
+app.use("/api/notifications/", apiNotificationsRoutes);
+
 app.use("/posts", postRoutes);
 app.use("/profile", profileRoutes);
 app.use("/uploads", uploadRoutes);
