@@ -23,8 +23,7 @@ exports.postMessage = async(req, res, next) => {
         result = await User.populate(result, { path: "chat.users"});
 
         let chat = await Chat.findByIdAndUpdate(req.body.chatId, {latestMessage: result});
-
-        insertNotification(chat, result)
+        insertNotification(chat, result);
     
         res.status(201).send(result);
     } catch(err) {

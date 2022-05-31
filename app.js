@@ -96,6 +96,10 @@ connectDB()
                 socket.in(room).emit("stop typing");
             });
 
+            socket.on("notification received", room => {
+                socket.in(room).emit("notification received");
+            });
+
             socket.on("new message", newMessage => {
                 let chat = newMessage.chat;
                 if(!chat.users) return console.log("chat.ussers not found");
@@ -104,9 +108,7 @@ connectDB()
                     if(user._id == newMessage.sender._id) return;
                     socket.in(user._id).emit("message received", newMessage);
 
-                })
-
-
+                });
             });
 
         });

@@ -16,19 +16,21 @@ html(lang="en")
             .row 
                 nav.col-2 
                     a.blue(href="/")
-                        .fa-brands.fa-twitter
+                        i.fa-brands.fa-twitter
                     a(href="/")
-                        .fa-solid.fa-house
+                        i.fa-solid.fa-house
                     a(href="/search")
-                        .fa-solid.fa-magnifying-glass
+                        i.fa-solid.fa-magnifying-glass
                     a(href="/notifications")
-                        .fa-solid.fa-bell               
+                        i.fa-solid.fa-bell        
+                        span#notificationBadge 8       
                     a(href="/messages")
-                        .fa-solid.fa-envelope                   
+                        i.fa-solid.fa-envelope        
+                        span#messageBadge 8       
                     a(href="/profile")
-                        .fa-solid.fa-user
+                        i.fa-solid.fa-user
                     a(href="/logout")
-                        .fa-solid.fa-right-from-bracket
+                        i.fa-solid.fa-right-from-bracket
                 .mainSectionContainer.col-10.col-md-8.col-lg-6
                     .titleContainer 
                         h1 #{pageTitle}
@@ -36,7 +38,7 @@ html(lang="en")
                     block content
                 div.d-none.d-md-block.col-2.col-lg-4
 
-        
+        #notificationList
         script(src="https://kit.fontawesome.com/7a3e93cf1c.js",crossorigin="anonymous")
         script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js", integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13", crossorigin="anonymous")
         script(src="https://code.jquery.com/jquery-3.6.0.min.js", integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=", crossorigin="anonymous")

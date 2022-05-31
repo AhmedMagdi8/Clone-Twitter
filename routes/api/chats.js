@@ -11,6 +11,7 @@ router.post('/' , middleware.authMiddleware, chatsController.createChat);
 router.get('/' , middleware.authMiddleware, chatsController.getChats);
 router.get('/:chatId' , middleware.authMiddleware, chatsController.getChat);
 router.get('/:chatId/messages' , middleware.authMiddleware, chatsController.getFullChat);
+router.put('/:chatId/messages/markAsRead' , middleware.authMiddleware, chatsController.markAsRead);
 
 router.put('/:chatId' , middleware.authMiddleware, chatsController.updateChatName);
 

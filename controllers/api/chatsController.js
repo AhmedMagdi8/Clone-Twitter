@@ -42,6 +42,9 @@ exports.getChats = async(req, res, next) => {
         .sort({ updatedAt: -1}); // -1 is ascending
 
         chats = await User.populate(chats, { path: "latestMessage.sender"});
+        if(req.query.unreadOnly && req.query.unreadOnly == "true") {
+            chats = chats.filter(chat => chat.latestMessage && !chat.latestMessage.readBy.includes(req.session.user._id));
+        }
         res.status(200).send(chats);
 
 } catch(err) {
@@ -55,8 +58,14 @@ exports.getChat = async(req, res, next) => {
     try {
 
         let chat = await Chat.findOne({ _id: req.params.chatId, users: { $elemMatch: { $eq: req.session.user._id} }})
-        .populate("users");
+        .populate("users")
+        .populate("latestMessage");
 
+        // I added this
+        // let readBy = chat.latestMessage.readBy;
+        // readBy.push(req.session.user._id);
+        // console.log(readBy);
+        // await Message.findOneAndUpdate({ _id: chat.latestMessage._id }, { readBy: readBy});
         res.status(200).send(chat);
 
 } catch(err) {
@@ -74,6 +83,19 @@ exports.getFullChat = async(req, res, next) => {
         res.status(200).send(messages);
 
 } catch(err) {
+        console.log(err);
+        console.log("I am in the getFullChat");
+        return res.sendStatus(400);
+    }
+}
+
+exports.markAsRead = async(req, res, next) => {
+    
+    try {
+        await Message.updateMany({ chat:  req.params.chatId }, { $addToSet: {readBy: req.session.user._id}})
+        res.sendStatus(204);
+
+    } catch(err) {
         console.log(err);
         console.log("I am in the getFullChat");
         return res.sendStatus(400);

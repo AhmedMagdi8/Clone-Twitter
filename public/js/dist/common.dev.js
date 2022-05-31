@@ -4,6 +4,10 @@
 var cropper;
 var timer;
 var selectedUsers = [];
+$(document).ready(function () {
+  refreshMessageBadge();
+  refreshNotificationsBadge();
+});
 $("#postTextarea, #replyTextarea").keyup(function (event) {
   var value = event.target.value.trim();
   var isModal = $(event.target).parents(".modal").length == 1;
@@ -36,6 +40,7 @@ $("#submitPostButton, #submitReplyButton").click(function (event) {
 
   $.post("/api/posts", data, function (postData) {
     if (postData.replyTo) {
+      emitNotification(postData.replyTo.postedBy);
       location.reload();
     } else {
       var post = createPostHtml(postData);
@@ -223,10 +228,10 @@ $("#deletePostButton").click(function (event) {
     url: "/api/posts/".concat(postId),
     type: 'DELETE',
     success: function success(data, status, xhr) {
-      console.log(data);
-      console.log(status); // xhr means status code xml http requests if(xhr.status == 202) alert('deleted');
-
-      console.log(xhr);
+      // console.log(data);
+      // console.log(status);
+      // xhr means status code xml http requests if(xhr.status == 202) alert('deleted');
+      // console.log(xhr);
       location.reload();
     }
   });
@@ -281,6 +286,7 @@ $(document).on("click", ".likedButton", function (event) {
 
       if (postData.likes.includes(userLoggedIn._id)) {
         button.addClass('liked');
+        emitNotification(postData.postedBy);
       } else {
         button.removeClass('liked');
       }
@@ -298,8 +304,8 @@ $(document).on("click", ".retweetButton", function (event) {
       button.find('span').text(postData.retweetUsers.length || '');
 
       if (postData.retweetUsers.includes(userLoggedIn._id)) {
-        button.addClass('retweeted'); // let post = createPostHtml(postData);
-        // $(".postsContainer").prepend(post);
+        button.addClass('retweeted');
+        emitNotification(postData.postedBy);
       } else {
         button.removeClass('retweeted');
       }
@@ -332,6 +338,7 @@ $(document).on("click", ".followButton", function (event) {
         button.addClass('following');
         button.text("Following");
         difference = 1;
+        emitNotification(userId);
       } else {
         button.removeClass('following');
         button.text("Follow");
@@ -351,7 +358,6 @@ $(document).on("click", ".followButton", function (event) {
   });
 });
 $(document).on("click", ".notification.active", function (e) {
-  console.log("kjiuuiohi");
   var container = $(e.target);
   var notificationId = container.data().id;
   var href = container.attr("href");
@@ -554,7 +560,10 @@ function updateSelectedUsersHtml() {
 }
 
 function messageReceived(newMessage) {
-  if ($(".chatContainer").length == 0) {// show notification
+  if ($("[data-room=".concat(newMessage.chat._id, "]")).length == 0) {
+    // show notification
+    showMessagePopup(newMessage);
+    refreshMessageBadge();
   } else {
     addChatMessageHtml(newMessage);
   }
@@ -578,4 +587,172 @@ function markNotificationAsOpened() {
       callback();
     }
   });
+}
+
+function refreshMessageBadge() {
+  $.get("/api/chats", {
+    unreadOnly: true
+  }, function (data) {
+    var numResults = data.length;
+
+    if (numResults > 0) {
+      $("#messageBadge").text(numResults).addClass("active");
+    } else {
+      $("#messageBadge").text("").removeClass("active");
+    }
+  });
+}
+
+function refreshNotificationsBadge() {
+  $.get("/api/notifications", {
+    unreadOnly: true
+  }, function (data) {
+    var numResults = data.length;
+
+    if (numResults > 0) {
+      $("#notificationBadge").text(numResults).addClass("active");
+    } else {
+      $("#notificationBadge").text("").removeClass("active");
+    }
+  });
+}
+
+function showNotificationPopup(data) {
+  var html = createNotificationHtml(data);
+  var element = $(html);
+  element.hide().prependTo("#notificationList").slideDown("fast");
+  setTimeout(function () {
+    return element.fadeOut(400);
+  }, 5000);
+}
+
+function showMessagePopup(data) {
+  console.log(data);
+
+  if (!data.chat.latestMessage._id) {
+    data.chat.latestMessage = data;
+  }
+
+  var html = createChatHtml(data.chat);
+  var element = $(html);
+  element.hide().prependTo("#notificationList").slideDown("fast");
+  setTimeout(function () {
+    return element.fadeOut(400);
+  }, 5000);
+}
+
+function outputNotificationList(notificatins, container) {
+  notificatins.forEach(function (element) {
+    var html = createNotificationHtml(element);
+    container.append(html);
+  });
+
+  if (notificatins.length == 0) {
+    container.append("<span class='noResults'> Nothing to show.</span>");
+  }
+}
+
+function createNotificationHtml(notification) {
+  var userFrom = notification.userFrom;
+  var text = getNotificationText(notification);
+  var url = getNotificationUrl(notification);
+  var className = notification.opened ? "" : "active";
+  return "<a class=\"resultsListItem notification ".concat(className, "\" href=\"").concat(url, "\" data-id=\"").concat(notification._id, "\">\n                <div class=\"resultsImageContainer\">\n                    <img src='").concat(userFrom.profilePic, "'>\n                </div>\n                <div class=\"resultsDetailsContainer ellipsis\">\n                    ").concat(text, "\n                </div>\n            </a>");
+}
+
+function getNotificationText(notification) {
+  var userFrom = notification.userFrom;
+
+  if (!userFrom.firstName || !userFrom.lastName) {
+    return alert("User from data not populated");
+  }
+
+  var userFromName = userFrom.firstName + " " + userFrom.lastName;
+  var text;
+
+  if (notification.notificationType == "retweet") {
+    text = userFromName + " retweeted one of your posts";
+  } else if (notification.notificationType == "postLike") {
+    text = userFromName + " liked one of your posts";
+  } else if (notification.notificationType == "reply") {
+    text = userFromName + " replyed to one of your posts";
+  } else if (notification.notificationType == "follow") {
+    text = userFromName + " followed you";
+  }
+
+  return "<span class=\"ellipsis\">".concat(text, "</span>");
+}
+
+function getNotificationUrl(notification) {
+  var url = '#';
+
+  if (notification.notificationType == "retweet" || notification.notificationType == "postLike" || notification.notificationType == "reply") {
+    url = '/posts/' + notification.entityId;
+  } else if (notification.notificationType == "follow") {
+    url = '/profile/' + notification.entityId;
+  }
+
+  return url;
+}
+
+function createChatHtml(chatData) {
+  var chatName = getChatName(chatData);
+  var image = getChatImageElement(chatData);
+  var latestMessage = getLatestMessage(chatData.latestMessage);
+  var activeClass = !chatData.latestMessage || chatData.latestMessage.readBy.includes(userLoggedIn._id) ? "" : "active";
+  return "<a href='/messages/".concat(chatData._id, "' class='resultsListItem ").concat(activeClass, "'>\n                ").concat(image, "\n                <div class='resultsDetailsContainer ellipsis'>\n                    <span class=\"heading ellipsis\">").concat(chatName, "</span>\n                    <span class=\"subText ellipsis\">").concat(latestMessage, "</span>\n                </div>\n            </a>");
+}
+
+function getLatestMessage(latestMessage) {
+  if (latestMessage) {
+    var sender = latestMessage.sender;
+    return "".concat(sender.firstName, " ").concat(sender.lastName, ": ").concat(latestMessage.content);
+  }
+
+  return "New Chat";
+}
+
+function getChatName(chatData) {
+  var chatName = chatData.chatName;
+
+  if (!chatName) {
+    var otherChatUsers = getOtherChatUsers(chatData.users);
+    var namesArray = otherChatUsers.map(function (user) {
+      return user.firstName + " " + user.lastName;
+    });
+    chatName = namesArray.join(",");
+  }
+
+  return chatName;
+}
+
+function getOtherChatUsers(users) {
+  if (users.length == 1) {
+    return users;
+  }
+
+  return users.filter(function (u) {
+    return u._id !== userLoggedIn._id;
+  });
+}
+
+function getChatImageElement(chatData) {
+  var otherChatUsers = getOtherChatUsers(chatData.users);
+  var groupChatClass = "";
+  var chatImage = getUserChatImageElement(otherChatUsers[0]);
+
+  if (otherChatUsers.length > 1) {
+    groupChatClass = "groupChatImage";
+    chatImage += getUserChatImageElement(otherChatUsers[1]);
+  }
+
+  return "<div class='resultsImageContainer ".concat(groupChatClass, "'>").concat(chatImage, "</div>");
+}
+
+function getUserChatImageElement(user) {
+  if (!user || !user.profilePic) {
+    return alert("User is not invalid");
+  }
+
+  return "<img src='".concat(user.profilePic, "' alt='User's profile pic'>");
 }
