@@ -1,4 +1,3 @@
-let timer;
 
 $("#searchBox").keydown(event => {
     clearTimeout(timer);
@@ -27,5 +26,3 @@ async function search(searchTerm, searchType) {
         }
     })
 }
-
-
