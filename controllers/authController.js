@@ -6,6 +6,7 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.getLogout = (req, res, next) => {
+    req.session.user = null;
     res.redirect("/login");
 };
    
