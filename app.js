@@ -28,9 +28,9 @@ const { join } = require('path');
 
 const app = express();
 const port = process.env.PORT;
-
+console.log(__dirname);
 app.set('view engine', 'pug');
-app.set("views","views");
+app.set("views",__dirname + "/views");
 // extended means it can accept only key-value pairs of strings or arrays
 // if it set to true it means that it accept any data type
 app.use(express.urlencoded({ extended:false}));
