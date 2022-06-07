@@ -41,12 +41,8 @@ var apiMessagesRoutes = require('./routes/api/messages');
 
 var apiNotificationsRoutes = require('./routes/api/notifications');
 
-var _require = require('path'),
-    join = _require.join;
-
 var app = express();
 var port = process.env.PORT;
-console.log(__dirname);
 app.set('view engine', 'pug');
 app.set("views", __dirname + "/views"); // extended means it can accept only key-value pairs of strings or arrays
 // if it set to true it means that it accept any data type

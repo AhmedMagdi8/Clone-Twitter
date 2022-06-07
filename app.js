@@ -23,12 +23,11 @@ const chatsRoutes = require('./routes/api/chats');
 const apiMessagesRoutes = require('./routes/api/messages');
 const apiNotificationsRoutes = require('./routes/api/notifications');
 
-const { join } = require('path');
 
 
 const app = express();
 const port = process.env.PORT;
-console.log(__dirname);
+
 app.set('view engine', 'pug');
 app.set("views",__dirname + "/views");
 // extended means it can accept only key-value pairs of strings or arrays
