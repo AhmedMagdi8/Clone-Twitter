@@ -25,9 +25,7 @@ exports.getChatPage = async (req, res, next) => {
 
     const userId = req.session.user._id;
     const chatId = req.params.chatId;
-    console.log(userId);
-    console.log(chatId);
-    console.log("");
+
     const isValidId =  mongoose.isValidObjectId(chatId);
 
 
@@ -47,6 +45,7 @@ exports.getChatPage = async (req, res, next) => {
     if(!chat) {
         // Check if chat id is really user id
         let userFound = await User.findById(chatId);
+
         if(userFound) {
             // get chat using user id
             chat = await getChatByUserId(userId, userFound._id);
@@ -71,8 +70,9 @@ function getChatByUserId(userLoggedInId, otherUserId) {
             $size: 2,
             $all: [
                 {
-                    $elemMatch: { $eq: mongoose.Types.ObjectId(userLoggedInId)},
-                    $elemMatch: { $eq: mongoose.Types.ObjectId(otherUserId)},
+                    $elemMatch: { $eq: mongoose.Types.ObjectId(userLoggedInId)}
+                }, {
+                    $elemMatch: { $eq: mongoose.Types.ObjectId(otherUserId)}
                 }
             ]
         }

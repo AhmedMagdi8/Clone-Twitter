@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 
 exports.getProfile = (req, res, next) => {
 
+    
     const payload = {
         pageTitle: req.session.user.username,
         userLoggedIn: req.session.user,
