@@ -25,6 +25,9 @@ exports.getChatPage = async (req, res, next) => {
 
     const userId = req.session.user._id;
     const chatId = req.params.chatId;
+    console.log(userId);
+    console.log(chatId);
+    console.log("");
     const isValidId =  mongoose.isValidObjectId(chatId);
 
 
@@ -46,7 +49,7 @@ exports.getChatPage = async (req, res, next) => {
         let userFound = await User.findById(chatId);
         if(userFound) {
             // get chat using user id
-            chat = await getChatByUserId(userFound._id, userId);
+            chat = await getChatByUserId(userId, userFound._id);
         }
     }
 
